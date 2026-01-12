@@ -68,12 +68,12 @@ public class CafeLoader extends ElfLoader {
 	}
 
 	@Override
-	public void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program,
-			TaskMonitor monitor, MessageLog log) throws IOException, CancelledException {
+	public void load(Program program, ImporterSettings settings) throws IOException, CancelledException {
 		try {
-			byte[] data = RplConverter.convertRpl(provider, log::appendMsg);
+			MessageLog log = settings.log();
+			byte[] data = RplConverter.convertRpl(settings.provider(), log::appendMsg);
 			RplHeader rpl = new RplHeader(new ByteArrayProvider(data), log::appendMsg);
-			ElfProgramBuilder.loadElf(rpl, program, options, log, monitor);
+			ElfProgramBuilder.loadElf(rpl, program, settings.options(), log, settings.monitor());
 		} catch (ElfException | DataFormatException var8) {
 			throw new IOException(var8.getMessage());
 		}
